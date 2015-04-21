@@ -1,5 +1,5 @@
 gateway:
-  build: .
+  image: eskrima/services-api-gateway:dev
 
   environment:
     NODE_ENV: docker

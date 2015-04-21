@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rtorino/mailer-gateway.git"
+    "url": "https://github.com/eskrima/services-api-gateway.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rtorino/mailer-gateway/issues"
+    "url": "https://github.com/eskrima/services-api-gateway/issues"
   },
-  "homepage": "https://github.com/rtorino/mailer-gateway",
+  "homepage": "https://github.com/eskrima/services-api-gateway",
   "dependencies": {
     "hapi": "^8.4.0",
     "hapi-swagger": "^0.7.1",

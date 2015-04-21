@@ -6,7 +6,7 @@
     }
   },
   "rabbitmq": {
-    "server": "localhost",
+    "server": "boot2docker",
     "port": 5672,
     "user": "guest",
     "pass": "guest"

@@ -8,16 +8,21 @@ module.exports = [
   {
     path: '/templates',
     method: 'GET',
-    handler: function (request, reply) {
-      // lapin requester
-      var requester = lapin.request('v1.template.findAll');
+    config: {
+      description: 'Get all templates',
+      notes: 'Returns the array of templates',
+      tags: ['api', 'templates', 'find'],
+      handler: function (request, reply) {
+        lapin.request('v1.template.findAll', {},
+          function (error, response) {
+            if (error) {
+              reply(error).code(500);
+            }
 
-      requester.produce('getTemplate', function (err, template) {
-        if (err) {
-          reply(err).code(500);
-        }
-        reply(template.data);
-      });
+            reply(response.data);
+          }
+        );
+      }
     }
   },
 
@@ -25,7 +30,9 @@ module.exports = [
     path: '/templates',
     method: 'POST',
     config: {
-      description: 'create template',
+      description: 'Create a new template',
+      notes: 'Returns the path of the created template in the response headers',
+      tags: ['api', 'template', 'create'],
       validate: {
         payload: {
           name: Joi.string().required()
@@ -40,56 +47,61 @@ module.exports = [
       },
       handler: function (request, reply) {
         // lapin requester
-        var requester = lapin.request('v1.template.create');
+        lapin.request('v1.template.create', request.payload,
+          function (error, response) {
+            if (error) {
+              reply(error).code(500);
+            }
 
-        requester.produce(request.payload, function (err, template) {
-          if (error) {
-            reply(error).code(500);
+            var baseUrl = request.server.info.uri;
+            var path = request.path;
+
+            reply().created( baseUrl + path + '/' + response.data.id )
           }
-          reply(template.data);
-        });
+        );
       }
     }
   },
 
   {
-    path : '/templates/{templateId}',
+    path : '/templates/{id}',
     method: 'GET',
     config : {
-      description: 'get specific template',
+      description: 'Get a specific template by ID',
+      notes: 'Returns data for the specified template ID',
+      tags: ['api', 'template', 'findById'],
       validate: {
         params: {
-          templateId: Joi.string()
-            .description('The id of the template')
+          id: Joi.string()
+            .description('The id of the template').required()
         }
       },
       handler : function (request, reply) {
-        // lapin requester
-        var requester = lapin.request('v1.template.findById');
+        lapin.request('v1.template.findById', {
+            id: request.params.id
+          }, function (error, response) {
+            if (error) {
+              reply(error).code(500);
+            }
 
-        var requestData = {
-          'id' : request.params.templateId
-        };
-
-        requester.produce(requestData, function (err, template) {
-          if (error) {
-            reply(error).code(500);
+            reply(response.data);
           }
-          reply(template.data);
-        });
+        );
       }
     }
   },
 
   {
-    path : '/templates/{templateId}',
+    path : '/templates/{id}',
     method: 'PUT',
     config : {
-      description: 'update specific template',
+      description: 'Update template attributes for the specified template ID',
+      notes: 'Returns number of affected rows',
+      tags: ['api', 'template', 'updateById'],
       validate: {
         params: {
-          templateId: Joi.string()
-            .description('The id of the template')
+          id: Joi.string()
+            .description('The id of the template').required()
         },
         payload: {
           name: Joi.string().required()
@@ -103,19 +115,47 @@ module.exports = [
         }
       },
       handler : function (request, reply) {
-        // lapin requester
-        var requester = lapin.request('v1.template.updateById');
+        var message = {
+          id: request.params.id,
+          payload: request.payload
+        };
 
-        if(!request.payload.id) {
-          request.payload.id = request.params.templateId;
-        }
+        lapin.request('v1.template.updateById', message,
+          function (error, template) {
+            if (error) {
+              reply(error).code(500);
+            }
 
-        requester.produce(request.payload, function (error, template) {
-          if (error) {
-            reply(error).code(500);
+            reply(template.data);
           }
-          reply(template.data);
-        });
+        );
+      }
+    }
+  },
+
+  {
+    path: '/templates/{id}',
+    method: 'DELETE',
+    config: {
+      description: 'Delete a template with the specified instance ID',
+      notes: 'Set the deletedAt timestamp to the current time',
+      tags: ['api', 'template', 'deleteById'],
+      validate: {
+        params: {
+          id: Joi.string().description('The template ID').required()
+        }
+      },
+      handler : function (request, reply) {
+        lapin.request('v1.template.deleteById', {
+            id: request.params.id
+          }, function (error, response) {
+            if (error) {
+              reply(error).code(500);
+            }
+
+            reply().code(204);
+          }
+        );
       }
     }
   }

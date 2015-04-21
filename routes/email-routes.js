@@ -6,18 +6,29 @@ var emailSender = new EmailSender()
 
 module.exports = [
   {
-    method: 'GET',
-    path: '/email',
+    path: '/emails/send',
+    method: 'POST',
     config: {
-      handler: function (request, reply) {
-        var emailInfo = {
-          from: 'gz.eskrima@gmail.com',
-          to: 'raymond.torino@globalzeal.net',
-          subject: 'Test',
-          text: 'Test lang'
-        };
+      description: 'Send an email to a list of recepients',
+      notes: 'Sender and recepient emails are required',
+      tags: ['api', 'email', 'send'],
+      validate: {
+        payload: {
+          from: Joi.string().required().email()
+            .description( 'The sender of the email' ),
 
-        emailSender.send(emailInfo, function () {
+          to: Joi.string().required().email()
+            .description('The recepient of the email'),
+
+          subject: Joi.string().optional()
+            .description('The subject of the email'),
+
+          text: Joi.string().optional()
+            .description('The body of the email')
+        }
+      },
+      handler: function (request, reply) {
+        emailSender.send(request.payload, function () {
           reply( 'message sent' );
         });
       }
