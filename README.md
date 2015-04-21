@@ -2,7 +2,7 @@
 
 Api gateway for Eskrima Services. Intended for testing services that we build.
 
-## Running
+## Running the API Gateway
 1. Create a local docker image of the gateway by running:
 
 ```bash
