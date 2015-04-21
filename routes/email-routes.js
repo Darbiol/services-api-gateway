@@ -2,7 +2,7 @@
 
 var Joi = require( 'joi' );
 var EmailSender = require('../handlers/email-sender.js');
-var emailSender = new EmailSender()
+var emailSender = new EmailSender();
 
 module.exports = [
   {
