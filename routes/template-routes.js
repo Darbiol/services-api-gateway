@@ -13,7 +13,7 @@ module.exports = [
       notes: 'Returns the array of templates',
       tags: ['api', 'templates', 'find'],
       handler: function (request, reply) {
-        lapin.request('v1.template.findAll', {},
+        lapin.request('v1.templates.findAll', {},
           function (error, response) {
             if (error) {
               reply(error).code(500);
@@ -46,8 +46,7 @@ module.exports = [
         }
       },
       handler: function (request, reply) {
-        // lapin requester
-        lapin.request('v1.template.create', request.payload,
+        lapin.request('v1.templates.create', request.payload,
           function (error, response) {
             if (error) {
               reply(error).code(500);
@@ -77,7 +76,7 @@ module.exports = [
         }
       },
       handler : function (request, reply) {
-        lapin.request('v1.template.findById', {
+        lapin.request('v1.templates.findById', {
             id: request.params.id
           }, function (error, response) {
             if (error) {
@@ -120,7 +119,7 @@ module.exports = [
           payload: request.payload
         };
 
-        lapin.request('v1.template.updateById', message,
+        lapin.request('v1.templates.updateById', message,
           function (error, template) {
             if (error) {
               reply(error).code(500);
@@ -146,7 +145,7 @@ module.exports = [
         }
       },
       handler : function (request, reply) {
-        lapin.request('v1.template.deleteById', {
+        lapin.request('v1.templates.deleteById', {
             id: request.params.id
           }, function (error, response) {
             if (error) {
