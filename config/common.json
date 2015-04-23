@@ -1,0 +1,14 @@
+{
+  "api": {
+    "port": 8005,
+    "routes": {
+      "cors": true
+    }
+  },
+  "rabbitmq": {
+    "server": "boot2docker",
+    "port": 5672,
+    "user": "guest",
+    "pass": "guest"
+  }
+}

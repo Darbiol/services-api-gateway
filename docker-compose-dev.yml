@@ -1,0 +1,11 @@
+gateway:
+  image: eskrima/services-api-gateway:dev
+
+  environment:
+    NODE_ENV: docker
+
+  external_links:
+    - rabbitmq
+
+  ports:
+    - "8005:8005"
