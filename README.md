@@ -1,6 +1,6 @@
 # Services API Gateway
 
-Api gateway for Eskrima Services. Intended for testing services that we build.
+API gateway for Eskrima Services. Intended for testing services that we build.
 
 ## Running the API Gateway
 1. Create a local docker image of the gateway by running:

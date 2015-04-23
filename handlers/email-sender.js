@@ -6,8 +6,8 @@ var wascally = require('wascally');
 
 function EmailSender () {
   Rabbus.Sender.call(this, wascally, {
-    exchange: 'send-rec.email-exchange',
-    messageType: 'send-rec.v1.email.send',
+    exchange: 'send-rec.emails-exchange',
+    messageType: 'send-rec.v1.emails.send',
   });
 }
 
