@@ -15,13 +15,13 @@ module.exports = [
       validate: {
         query: {
             id: Joi.boolean().optional()
-	            .description( 'Flag to either include or exclude the `id` field when getting results from the database' ),
-	        name: Joi.boolean().optional()
-	            .description( 'Flag to either include or exclude the `name` field when getting results from the database' ),
-	        description: Joi.boolean().optional()
-	            .description('Flag to either include or exclude the `description` field when getting results form the database'),
-	        content: Joi.boolean().optional()
-	            .description('Flag to either include or exclude the `content` field when getting results from the database')
+              .description( 'Flag to either include or exclude the `id` field when getting results from the database' ),
+          name: Joi.boolean().optional()
+              .description( 'Flag to either include or exclude the `name` field when getting results from the database' ),
+          description: Joi.boolean().optional()
+              .description('Flag to either include or exclude the `description` field when getting results form the database'),
+          content: Joi.boolean().optional()
+              .description('Flag to either include or exclude the `content` field when getting results from the database')
         }
       },
       handler: function (request, reply) {
