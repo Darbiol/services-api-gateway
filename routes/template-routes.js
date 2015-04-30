@@ -12,8 +12,20 @@ module.exports = [
       description: 'Get all templates',
       notes: 'Returns the array of templates',
       tags: ['api', 'templates', 'find'],
+      validate: {
+        query: {
+            id: Joi.boolean().optional()
+	            .description( 'Flag to either include or exclude the `id` field when getting results from the database' ),
+	        name: Joi.boolean().optional()
+	            .description( 'Flag to either include or exclude the `name` field when getting results from the database' ),
+	        description: Joi.boolean().optional()
+	            .description('Flag to either include or exclude the `description` field when getting results form the database'),
+	        content: Joi.boolean().optional()
+	            .description('Flag to either include or exclude the `content` field when getting results from the database')
+        }
+      },
       handler: function (request, reply) {
-        lapin.request('v1.templates.findAll', {},
+        lapin.request('v1.templates.findAll', request.query,
           function (error, response) {
             if (error) {
               reply(error).code(500);

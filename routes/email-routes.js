@@ -1,8 +1,10 @@
 'use strict';
 
-var Joi = require( 'joi' );
+var Joi         = require( 'joi' );
 var EmailSender = require('../handlers/email-sender.js');
 var emailSender = new EmailSender();
+var rabbit      = require('wascally');
+var lapin       = require('lapin')(rabbit);
 
 module.exports = [
   {
@@ -11,7 +13,7 @@ module.exports = [
     config: {
       description: 'Send an email to a list of recepients',
       notes: 'Sender and recepient emails are required',
-      tags: ['api', 'email', 'send'],
+      tags: ['api', 'email', 'send', 'template'],
       validate: {
         payload: {
           from: Joi.string().required().email()
@@ -24,13 +26,35 @@ module.exports = [
             .description('The subject of the email'),
 
           text: Joi.string().optional()
-            .description('The body of the email')
+            .description('The body of the email'),
+
+          id: Joi.string().optional()
+            .description('The id of the template being used'),
+
+          sendMail: Joi.boolean().optional()
+            .description('The flag to check if a user wants a preview of the compiled template or just send it')
         }
       },
       handler: function (request, reply) {
-        emailSender.send(request.payload, function () {
-          reply( 'message sent' );
-        });
+        if (request.payload.id) {
+          // this means the user has chosen a template to use for the email
+          // send request to temp service
+          lapin.request('v1.templates.compile', request.payload,
+            function (error, response) {
+              if (error) {
+                reply(error).code(500);
+              }
+              reply(response.data);
+            }
+          );
+        } else {
+          // this means the user has not chosen a template and this email is just an ordinary email
+          // send a Send to email service
+          emailSender.send(request.payload, function () {
+            reply( 'message sent' );
+          });
+       }
+
       }
     }
   }
