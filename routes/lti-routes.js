@@ -1,8 +1,9 @@
 'use strict';
 
 var Joi = require('joi');
-var data = require( '../data/names' );
 var _ = require( 'lodash' );
+var rabbit = require('wascally');
+var lapin = require('lapin')(rabbit);
 var newData = [];
 // var lti = require( 'ims-lti' );
 
@@ -91,11 +92,25 @@ module.exports = [
 				.description( 'encryption method used to encrypt the signature' ),
 			oauth_signature : Joi.string().optional()
 				.description( 'signature' ),
+			custom_consumer_secret : Joi.string().required()
+				.description( 'signature' )
 		  },
       },
-      handler: function (request, reply) {
-		reply(request.payload);
-	  }
+       handler: function (request, reply) {
+        lapin.request('v1.lti.version1', request.payload,
+          function (error, response) {
+           reply( response );
+            // if (error) {
+            //   reply(error).code(500);
+            // }
+
+            // var baseUrl = request.server.info.uri;
+            // var path = request.path;
+
+            // reply().created( baseUrl + path + '/' + response.data.id )
+          }
+        );
+      }
 	}
   }
 
