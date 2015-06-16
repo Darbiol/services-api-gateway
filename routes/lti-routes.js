@@ -97,17 +97,17 @@ module.exports = [
 		  },
       },
        handler: function (request, reply) {
-        lapin.request('v1.lti.version1', request.payload,
+       	var req = {};
+       	req.body = request.payload;
+       	req.method = request.method;
+
+        lapin.request('v1.lti.version1', req,
           function (error, response) {
-           reply( response );
-            // if (error) {
-            //   reply(error).code(500);
-            // }
-
-            // var baseUrl = request.server.info.uri;
-            // var path = request.path;
-
-            // reply().created( baseUrl + path + '/' + response.data.id )
+            console.log( 'response' );
+            reply( response );
+            if (error) {
+              reply(error).code(500);
+            }
           }
         );
       }
