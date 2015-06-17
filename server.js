@@ -32,7 +32,7 @@ function startServer() {
   server.connection(apiConfig);
 
   // Register plugins before starting the server
-  server.register(plugins, pluginOpts, function (err) {
+  server.register(plugins, pluginOpts, function(err) {
     if (err) {
       throw err;
     } else {
@@ -50,7 +50,7 @@ function startServer() {
 }
 
 function reportError() {
-  rabbit.closeAll().then(function () {
+  rabbit.closeAll().then(function() {
     if (err) {
       throw err;
     }

@@ -1,4 +1,7 @@
-gateway:
+#####################
+# Services Gateways
+#####################
+servicesGateways:
   image: eskrima/services-api-gateway:dev
 
   environment:

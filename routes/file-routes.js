@@ -1,53 +1,110 @@
 'use strict';
 
-var fs = require('fs');
-var amqp = require('amqp');
-var amqpStream = require('amqp-stream');
+var Joi = require('joi');
+var fileHandlers = require('../handlers/file');
 
 module.exports = [
   {
-    path: '/files/upload',
     method: 'POST',
+    path: '/files',
     config: {
       description: 'Upload a file',
       notes: 'Returns the data of the uploaded file',
-      tags: ['api', 'file', 'upload'],
+      tags: ['api', 'files', 'upload'],
+
       payload: {
         output: 'stream',
         parse: true,
         allow: 'multipart/form-data',
-        maxBytes: 10485760 // 10MB
+        maxBytes: 104857600 // 100MB
       },
-      handler: function (request, reply) {
-        var payload = request.payload;
 
-        if (payload.file) {
-          // create an AMPQ RPC client
-          var connection = amqp.createConnection({host: 'boot2docker'});
-          var amqpStreamOpts = {
-              connection: connection,
-              exchange: 'req-res.files-exchange',
-              routingKey: 'v1.files.upload'
-          };
+      validate: {
+        payload: {
+          file: Joi.any().required()
+            .meta({
+              swaggerType: 'file'
+            })
+            .description('File to upload'),
 
-          amqpStream(amqpStreamOpts, function (err, rpcStream) {
-            rpcStream.createCorrelatedRequest(function (err, fileUploader) {
-              payload.file.pipe(fileUploader);
+          fileType: Joi.any().required()
+            .description('File type'),
 
-              fileUploader.on('end', function (err) {
-                connection.end.bind(connection);
+          description: Joi.string().optional()
+            .description('File description')
 
-                var ret = {
-                  filename: payload.file.hapi.filename,
-                  headers: payload.file.hapi.headers
-                };
-
-                reply(JSON.stringify(ret));
-              });
-            });
-          });
         }
-      }
+      },
+
+      handler: fileHandlers.upload.bind(fileHandlers)
+    }
+  },
+
+  {
+    method: 'GET',
+    path: '/files/{id}/download',
+    config: {
+      description: 'Download a file',
+      notes: 'Returns the data of the uploaded file',
+      tags: ['api', 'files', 'download'],
+
+      validate: {
+        params: {
+          id: Joi.string()
+            .description('The id of the file').required()
+        }
+      },
+
+      handler: fileHandlers.download.bind(fileHandlers)
+    }
+  },
+
+  {
+    method: 'GET',
+    path: '/files/{id}',
+    config: {
+      description: 'Get a file',
+      notes: 'Returns the metadata of the file specified by id',
+      tags: ['api', 'files', 'findById'],
+
+      validate: {
+        params: {
+          id: Joi.string()
+            .description('The id of the file').required()
+        }
+      },
+
+      handler: fileHandlers.findById.bind(fileHandlers)
+    }
+  },
+
+  {
+    method: 'GET',
+    path: '/files',
+    config: {
+      description: 'Get all files',
+      notes: 'Returns array of file metadata uploaded files',
+      tags: ['api', 'files', 'findAll'],
+      handler: fileHandlers.findAll.bind(fileHandlers)
+    }
+  },
+
+  {
+    method: 'DELETE',
+    path: '/files/{id}',
+    config: {
+      description: 'Delete a file with the specified instance ID',
+      notes: 'Set the deletedAt timestamp to the current time',
+      tags: ['api', 'files', 'deleteById'],
+
+      validate: {
+        params: {
+          id: Joi.string()
+            .description('The id of the file').required()
+        }
+      },
+
+      handler: fileHandlers.deleteById.bind(fileHandlers)
     }
   }
 ];
