@@ -5,7 +5,6 @@ var _ = require( 'lodash' );
 var rabbit = require('wascally');
 var lapin = require('lapin')(rabbit);
 var newData = [];
-// var lti = require( 'ims-lti' );
 
 module.exports = [
   {
@@ -92,22 +91,24 @@ module.exports = [
 				.description( 'encryption method used to encrypt the signature' ),
 			oauth_signature : Joi.string().optional()
 				.description( 'signature' ),
-			custom_consumer_secret : Joi.string().required()
-				.description( 'signature' )
 		  },
       },
        handler: function (request, reply) {
        	var req = {};
        	req.body = request.payload;
        	req.method = request.method;
+       	req.connection = { 'encrypted' : false };
+       	req.originalUrl = request.pathname;
+       	req.url = request.path;
+       	req.headers = request.headers;
+       	req.session = request.session || {};
 
         lapin.request('v1.lti.version1', req,
           function (error, response) {
-            console.log( 'response' );
-            reply( response );
             if (error) {
               reply(error).code(500);
             }
+            reply( response );
           }
         );
       }
